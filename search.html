@@ -1,0 +1,395 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br" ng-app="search.controllers">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Procura </title>
+
+
+        <!-- CSS -->
+        <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,100,300,500">
+        <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+        <link rel="stylesheet" href="assets/font-awesome/css/font-awesome.min.css">
+
+  <link rel="stylesheet" href="assets/css/checkboxradio.css">
+
+    <link rel="stylesheet" href="assets/css/search-table.css">
+
+		<link rel="stylesheet" href="assets/css/form-elements.css">
+
+        <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+        <!-- Favicon and touch icons -->
+        <link rel="shortcut icon" href="assets/ico/favicon.png">
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="assets/ico/apple-touch-icon-144-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="assets/ico/apple-touch-icon-114-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/ico/apple-touch-icon-72-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" href="assets/ico/apple-touch-icon-57-precomposed.png">
+
+    </head>
+
+<body ng-controller="searchCtrl">
+
+
+
+
+    <div class="container">
+        <input id="toggle" data-height="50px" type="checkbox" checked data-toggle="toggle" data-on="BD Principal" data-off="BD Sugestão" data-onstyle="success" data-offstyle="default">
+
+        
+            <div class="col-xs-8 col-xs-offset-2">
+                <div class="input-group ">
+
+                    <div class="input-group-btn search-panel">
+
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            <span id="search_concept">Filtro por</span> <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="#tudo">Tudo</a></li>
+                            <li><a href="#estabelecimento"  >Estabelecimento</a></li>
+                            <li><a href="#bairro" >Bairro</a></li>
+                            <li><a href="#cidade" >Cidade</a></li>
+                        </ul>
+                    </div>
+
+
+                    <input type="hidden" name="search_param" value="all" id="search_param">
+                    <input type="text" id="searchTerm" style="visibility:hidden" ng-change="onTyping()" class="form-control" ng-model="searchTerm" ng-keypress="myFunct($event)" name="x" placeholder="Termo de busca...">
+                    <span class="input-group-btn ">
+                        <button class="btn btn-default" id="btnSearch" style="visibility:hidden" disabled type="button"  ng-click="onSearch()"><span class="glyphicon glyphicon-search"></span></button>
+
+
+                    </span>
+                    
+                </div>
+               
+            </div>
+        
+    </div>
+
+
+        <br>
+        <br>
+
+
+
+        <div id="tabela" style="visibility:hidden" class="panel panel-default panel-table">
+            <div id="table-scroll">
+                <div class="panel-body">
+                    <table class="table table-striped table-bordered table-list">
+                        <thead>
+                            <tr>
+                                <th><em class="fa fa-cog"></em></th>
+
+                                <th>Nome</th>
+                                <th>Endereço</th>
+                                <th>Bairro</th>
+                                <th>Cidade</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="est in estabelecimentos">
+                                <td align="center">
+                                    <a class="btn btn-default" ng-click="onEdit(est)"><em class="fa fa-pencil"></em></a>
+                                    
+                                    <a data-toggle="modal" href="#myModal" ng-click="onSelectRemove(est)" class="btn btn-danger" ><em class="fa fa-trash"></em></a>
+                                </td>
+
+
+                                <td>{{est.nome}}</td>
+                                <td>{{est.end}}</td>
+                                <td>{{est.bairro}}</td>
+                                <td>{{est.cidade}}</td>
+
+
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="container" id="editavel">
+            <div class="row">
+
+                <div class="panel panel-default mystyle">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><b>{{id}}</b></h3>
+                    </div>
+                    <div class="panel-body">
+                        <form class="form-horizontal mystyle" role="form">
+                            <div class="form-group row">
+                                <div class="col-md-2">
+                                    <img src="{{imgURL}}" width="90" height="90" />
+                                </div>
+                                <label for="inputNome" class="col-md-1 control-label">Nome</label>
+                                <div class="col-md-8">
+                                    <input type="text" ng-model="nome" class="form-control" id="inputNome" />
+                                </div>
+                                <br />
+                                <br />
+
+                                <label for="inputTipo" class="col-md-1 control-label">Tipo</label>
+                                <div class="col-md-8">
+                                    <input type="text" ng-model="tipo" class="form-control" id="inputTipo" />
+                                </div>
+                                <br />
+                                <br />
+
+                                <label for="inputCoordX" class="col-md-1 control-label">Coord</label>
+                                <div class="col-md-3">
+                                    <input type="text" ng-model="coordX" class="form-control" id="inputCoordX">
+                                </div>
+
+                                <div class="col-md-3">
+                                    <input type="text" ng-model="coordY" class="form-control" id="inputCoordY">
+                                </div>
+
+                            </div>
+                            <div class="form-group">
+                                <label for="inputEndereco" class="col-md-1 control-label">Endereço</label>
+                                <div class="col-sm-10">
+                                    <input type="text" ng-model="end" class="form-control" id="inputEndereco" />
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+
+
+                                <label for="inputBairro" class="col-md-1 control-label">Bairro</label>
+                                <div class="col-md-4">
+                                    <input type="text" ng-model="bairro" class="form-control" id="inputBairro">
+                                </div>
+                                <label for="inputCidade" class="col-md-1 control-label">Cidade</label>
+                                <div class="col-md-4">
+                                    <input type="text" ng-model="cidade" class="form-control" id="inputCidade">
+                                </div>
+
+                                <div class="col-md-1">
+                                    <input type="text" ng-model="estado" class="form-control" id="inputEstado">
+
+                                </div>
+
+                            </div>
+
+                            <div class="form-group row">
+
+                                <label for="inputImgURL" class="col-md-3 col-md-pull-1  control-label">URL da  img</label>
+                                <div class="col-md-9 col-md-pull-1">
+                                    <input type="text" ng-model="imgURL" class="form-control" id="inputImgURL">
+
+                                </div>
+
+
+                            </div>
+
+                            <div class="form-group row">
+
+
+                                <label for="inputCriado" class="col-md-1 control-label">Criado</label>
+                                <div class="col-md-4">
+                                    <input type="text" ng-model="criado" class="form-control" id="inputCriado">
+                                </div>
+                                <label for="inputModificado" class="col-md-2 control-label">Modificado</label>
+                                <div class="col-md-4">
+                                    <input type="text" ng-model="modificado" class="form-control" id="inputModificado">
+                                </div>
+
+
+                            </div>
+
+
+
+                            <center><b style="font-size:16px">Horário de Funcionamento</b></center>
+                    <div class="form-group row ">
+                        <label for="inputSeg" class="col-md-2 control-label">Segunda</label>
+                        <div class="col-md-4">
+                            <input type="text" ng-model="seg" class="form-control" id="inputSeg">
+                        </div>
+                        <label for="inputSeg2" class="col-md-2 control-label">2ª hr</label>
+                        <div class="col-md-4">
+                            <input type="text" ng-model="seg2" class="form-control" id="inputSeg2">
+                        </div>
+                    </div>
+                     <div class="form-group row ">
+                        <label for="inputTer" class="col-md-2 control-label">Terça</label>
+                        <div class="col-md-4">
+                            <input type="text" ng-model="ter" class="form-control" id="inputTer">
+                        </div>
+                        <label for="inputTer2" class="col-md-2 control-label">2ª hr</label>
+                        <div class="col-md-4">
+                            <input type="text" ng-model="ter2" class="form-control" id="inputTer2">
+                        </div>
+                    </div>
+                     <div class="form-group row ">
+                        <label for="inputQua" class="col-md-2 control-label">Quarta</label>
+                        <div class="col-md-4">
+                            <input type="text" ng-model="qua" class="form-control" id="inputQua">
+                        </div>
+                        <label for="inputQua2" class="col-md-2 control-label">2ª hr</label>
+                        <div class="col-md-4">
+                            <input type="text" ng-model="qua2" class="form-control" id="inputQua2">
+                        </div>
+                    </div>
+                     <div class="form-group row ">
+                        <label for="inputQui" class="col-md-2 control-label">Quinta</label>
+                        <div class="col-md-4">
+                            <input type="text" ng-model="qui" class="form-control" id="inputQui">
+                        </div>
+                        <label for="inputQui2" class="col-md-2 control-label">2ª hr</label>
+                        <div class="col-md-4">
+                            <input type="text" ng-model="qui2" class="form-control" id="inputQui2">
+                        </div>
+                    </div>
+                     <div class="form-group row ">
+                        <label for="inputSex" class="col-md-2 control-label">Sexta</label>
+                        <div class="col-md-4">
+                            <input type="text" ng-model="sex" class="form-control" id="inputSex">
+                        </div>
+                        <label for="inputSex2" class="col-md-2 control-label">2ª hr</label>
+                        <div class="col-md-4">
+                            <input type="text" ng-model="sex2" class="form-control" id="inputSex2">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="inputSab" class="col-md-2 control-label">Sábado</label>
+                        <div class="col-md-4">
+                            <input type="text" ng-model="sab" class="form-control" id="inputSab">
+                        </div>
+                        <label for="inputSab2" class="col-md-2 control-label">2ª hr</label>
+                        <div class="col-md-4">
+                            <input type="text" ng-model="sab2" class="form-control" id="inputSab2">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="inputDom" class="col-md-2 control-label">Domingo</label>
+                        <div class="col-md-4">
+                            <input type="text" ng-model="dom" class="form-control" id="inputDom">
+                        </div>
+                        <label for="inputDom2" class="col-md-2 control-label">2ª hr</label>
+                        <div class="col-md-4">
+                            <input type="text" ng-model="dom2" class="form-control" id="inputDom2">
+                        </div>
+                    </div>
+
+
+                            <div class="form-group row">
+                                <label for="inputIphone" class="col-md-1 control-label">Cabo Iphone</label>
+                                <div class="col-md-1">
+                                    <input type="checkbox" ng-model="cbIphoneAlt" class="form-control" id="inputIphone">
+                                </div>
+                                <label for="inputAndroid" class="col-md-1 control-label">Cabo Android</label>
+                                <div class="col-md-1">
+                                    <input type="checkbox" ng-model="cbAndroidAlt" class="form-control" id="inputAndroid">
+                                </div>
+                                <label for="inputWifi" class="col-md-1 control-label">Wifi</label>
+                                <div class="col-md-1">
+                                    <input type="checkbox" ng-model="wifiAlt" class="form-control" id="inputWifi">
+                                </div>
+                                <div ng-if="wifiAlt">
+                                    <label for="inputWifiSSID" class="col-md-1 control-label">SSID</label>
+                                    <div class="col-md-2">
+                                        <input type="text" ng-model="wifiSSID" class="form-control" id="inputWifiSSID">
+                                    </div>
+
+
+                                    <label for="inputWifiSenha" class="col-md-1 control-label">Senha</label>
+                                    <div class="col-md-2">
+                                        <input type="text" ng-model="wifiSenha" class="form-control" id="inputWifiSenha">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-md-8 col-lg-offset-2">
+                                    <button type="submit" ng-click="onAlter()" class="btn btn-default col-md-12">Alterar</button>
+
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    <div id="myModal" class="modal fade in">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header success">
+                   
+                    <a style="float:right"  class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span></a> 
+                    <h3>Atenção</h3>
+                   
+                </div>
+                <div class="modal-body">
+                    <h4>Tem certeza que gostaria de remover <b> {{toRemove.nome}} </b>?</h4>
+                  
+                </div>
+                <div class="modal-footer">
+                    
+                        
+                        <button class="btn btn-danger" ng-click="onRemove()"><span class="glyphicon glyphicon-check"></span> Remover</button>
+
+                </div>
+
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dalog -->
+    </div><!-- /.modal -->
+
+
+        <!-- Javascript -->
+        <script src="assets/js/angular.js"></script>
+        <script src="assets/js/jquery-1.11.1.min.js"></script>
+        <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+        <script src="assets/js/jquery.backstretch.min.js"></script>
+        <script src="assets/js/bootstrap-waitingfor.js"></script>
+        <script src="assets/js/bootstrap-waitingfor.min.js"></script>
+
+        
+
+        <!-- Background img -->
+        <script src="assets/js/scripts.js"></script>
+
+        <!-- Firebase -->
+        <script src="https://cdn.firebase.com/js/client/2.4.1/firebase.js"></script>
+
+        <!-- GeoFire -->
+        <script src="https://cdn.firebase.com/libs/geofire/4.0.0/geofire.min.js"></script>
+
+        <script src="assets/js/angularfire.min.js"></script>
+
+        <script src="assets/js/angularGeoFire.js"></script>
+
+    
+
+
+    <!-- toogle Bootstrap -->
+    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
+
+        <!-- Controllers -->
+      
+        <script src="assets/js/controllers/search.js"></script>
+   
+
+</body>
+
+ 
+   
+</html>
+
